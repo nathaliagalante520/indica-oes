@@ -1,14 +1,80 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rota das Origens Multiplayer</title><style>
-:root{--g:#163f36;--g2:#286555;--a:#e1aa4c;--c:#f5efe3;--r:#b14d3b;--i:#17211e;--w:#fff}*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;background:radial-gradient(circle at 10% 0,#fff,var(--c) 52%,#dfeae4);color:var(--i);min-height:100vh}header{background:var(--g);color:#fff;padding:16px 4vw;display:flex;justify-content:space-between;align-items:center;gap:12px}header h1{margin:0;font-size:clamp(20px,3vw,30px)}header small{color:#cfe2da}.badge{background:#ffffff18;border:1px solid #ffffff35;padding:8px 12px;border-radius:99px}.screen{display:none}.screen.show{display:block}.card{width:min(620px,92vw);margin:7vh auto;background:#ffffffdf;border:1px solid #fff;border-radius:26px;padding:28px;box-shadow:0 20px 70px #17382b24}.card h2{color:var(--g);font-size:30px;margin-top:0}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}input{width:100%;padding:14px;border:1px solid #b9c9c1;border-radius:13px;font-size:17px;margin:6px 0 12px}button{border:0;border-radius:13px;padding:13px 16px;font-weight:800;font-size:15px;cursor:pointer;background:var(--g);color:#fff}button.alt{background:#e4ece8;color:var(--g)}button.gold{background:var(--a);color:#2b2418}button:disabled{opacity:.45}.game{width:min(1200px,95vw);margin:24px auto;display:grid;grid-template-columns:1.45fr .75fr;gap:20px}.mapcard,.side{background:#ffffffdd;border-radius:24px;padding:18px;box-shadow:0 17px 50px #17382b20}.mapbox{height:590px;background:linear-gradient(145deg,#d6eae2,#f4e8d2);border-radius:18px;display:grid;place-items:center}.map{width:min(90%,610px);height:95%;filter:drop-shadow(0 10px 10px #17382b30)}.land{fill:#faf5e9;stroke:var(--g);stroke-width:5;cursor:crosshair}.guess{fill:var(--r);stroke:#fff;stroke-width:3}.answer{fill:var(--a);stroke:var(--g);stroke-width:4}.line{stroke:var(--r);stroke-width:2;stroke-dasharray:6 5}.side h2{font-size:31px;color:var(--g);margin:8px 0}.tag{display:inline-block;background:#e0ece7;padding:7px 10px;border-radius:99px;color:var(--g);font-size:12px;font-weight:850}.clue,.notice{padding:14px;border-radius:13px;background:#f2eee4;line-height:1.5;margin:15px 0}.notice{background:#e5efeb}.people{display:grid;gap:8px;max-height:270px;overflow:auto}.person{display:flex;justify-content:space-between;gap:8px;padding:10px 12px;background:#eef3f0;border-radius:10px}.done{color:#18704d;font-weight:800}.roomcode{font-size:44px;letter-spacing:.1em;color:var(--r);font-weight:900}.controls{display:flex;gap:9px;flex-wrap:wrap}.leader{margin-top:16px}.leader div{display:flex;justify-content:space-between;padding:9px;border-bottom:1px solid #dae4df}.error{color:#9b2f26;min-height:22px}.hidden{display:none!important}@media(max-width:850px){.game{grid-template-columns:1fr}.side{order:-1}.mapbox{height:470px}.grid2{grid-template-columns:1fr}}
-</style></head><body><header><div><h1>⌖ Rota das Origens</h1><small>Indicações de Procedência do Brasil</small></div><span class="badge" id="connection">Conectando...</span></header>
-<section id="home" class="screen show"><div class="card"><h2>Jogo coletivo em tempo real</h2><p>O administrador cria a sala. Participantes entram com o código, marcam uma localização e aguardam a revelação.</p><div class="grid2"><div><h3>Criar sala</h3><input id="hostName" placeholder="Nome do administrador"><button id="create">Criar como administrador</button></div><div><h3>Entrar na sala</h3><input id="playerName" placeholder="Seu nome"><input id="roomInput" placeholder="Código da sala" maxlength="5"><button id="join">Entrar como participante</button></div></div><div class="error" id="error"></div></div></section>
-<section id="lobby" class="screen"><div class="card"><span class="tag">SALA DE ESPERA</span><h2>Código da sala</h2><div class="roomcode" id="lobbyCode"></div><p>Compartilhe o link deste site e o código acima. Participantes conectados:</p><div class="people" id="lobbyPeople"></div><div class="controls"><button id="start" class="gold">Iniciar partida</button><button id="copy" class="alt">Copiar convite</button></div></div></section>
-<section id="game" class="screen"><main class="game"><div class="mapcard"><div class="mapbox"><svg class="map" id="map" viewBox="0 0 600 650"><path class="land" id="land" d="M182 31 L246 43 290 30 337 55 394 60 420 94 470 103 489 145 540 174 548 215 517 246 525 286 493 321 478 367 435 395 420 443 382 468 368 515 330 540 306 601 270 620 245 583 216 569 202 523 170 496 164 451 132 426 119 385 82 360 71 316 45 282 58 239 91 221 98 178 129 157 137 110 168 83 Z"/><g id="marks"></g></svg></div></div><aside class="side"><span class="tag" id="phaseTag">RODADA</span><h2 id="qName">Aguardando...</h2><b id="qProduct"></b><div class="clue" id="qClue"></div><div class="notice" id="notice"></div><div class="controls" id="hostControls"><button id="reveal" class="gold">Revelar localização</button><button id="next" class="hidden">Próxima rodada</button></div><h3>Participantes</h3><div class="people" id="gamePeople"></div><div class="leader" id="leader"></div></aside></main></section>
-<section id="finish" class="screen"><div class="card"><div style="font-size:45px">🏆</div><h2>Partida concluída!</h2><div class="leader" id="finalBoard"></div></div></section>
-<script src="/socket.io/socket.io.js"></script><script>
-const socket=io(),$=id=>document.getElementById(id);let role='',state=null,myGuess=null,revealed=null;socket.on('connect',()=>{$('connection').textContent='Online'});socket.on('disconnect',()=>{$('connection').textContent='Reconectando...'});function screen(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('show'));$(id).classList.add('show')}
-$('create').onclick=()=>socket.emit('createRoom',{hostName:$('hostName').value},r=>{if(r.ok){role='host';$('lobbyCode').textContent=r.code;screen('lobby')}});$('join').onclick=()=>socket.emit('joinRoom',{name:$('playerName').value,code:$('roomInput').value},r=>{if(r.ok){role='player';$('lobbyCode').textContent=r.code;screen('lobby')}else $('error').textContent=r.error});$('start').onclick=()=>socket.emit('start');$('reveal').onclick=()=>socket.emit('reveal');$('next').onclick=()=>socket.emit('next');$('copy').onclick=()=>navigator.clipboard?.writeText(location.href+' | Código: '+$('lobbyCode').textContent);
-function point(e){const pt=$('map').createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform($('map').getScreenCTM().inverse())}$('land').onclick=e=>{if(role!=='player'||state?.phase!=='guessing'||myGuess)return;myGuess=point(e);$('marks').innerHTML=`<circle class="guess" cx="${myGuess.x}" cy="${myGuess.y}" r="10"/>`;socket.emit('guess',myGuess);$('notice').textContent='Palpite enviado. Aguarde o administrador revelar a localização.'};
-socket.on('state',s=>{state=s;$('lobbyCode').textContent=s.code;const list=s.players.map(p=>`<div class="person"><span>${p.name}</span><span class="${p.submitted?'done':''}">${p.submitted?'✓ marcou':p.score+' pts'}</span></div>`).join('');$('lobbyPeople').innerHTML=list;$('gamePeople').innerHTML=list;$('start').style.display=role==='host'?'inline-block':'none';if(s.phase==='lobby')screen('lobby');if(s.phase==='guessing'||s.phase==='revealed'){screen('game');$('qName').textContent=s.question.name;$('qProduct').textContent=s.question.product;$('qClue').textContent='Pista: '+s.question.clue;$('phaseTag').textContent=`RODADA ${s.round+1}/${s.total}`;$('hostControls').style.display=role==='host'?'flex':'none';$('reveal').classList.toggle('hidden',s.phase!=='guessing');$('next').classList.toggle('hidden',s.phase!=='revealed');if(s.phase==='guessing'&&!revealed){$('notice').textContent=role==='host'?`${s.submitted} de ${s.players.length} participantes marcaram. Revele quando quiser.`:'Marque sua sugestão no mapa. Ela ficará oculta até a revelação.'}if(s.phase==='guessing'){revealed=null;myGuess=null;$('marks').innerHTML=''}}if(s.phase==='finished'){screen('finish');board(s.players,$('finalBoard'))}board(s.players,$('leader'))});
-socket.on('reveal',data=>{revealed=data;const q=data.answer;let svg=data.guesses.map(g=>`<line class="line" x1="${g.x}" y1="${g.y}" x2="${q.x}" y2="${q.y}"/><circle class="guess" cx="${g.x}" cy="${g.y}" r="9"><title>${g.name}: ${g.points} pontos</title></circle>`).join('');svg+=`<circle class="answer" cx="${q.x}" cy="${q.y}" r="12"/>`;$('marks').innerHTML=svg;$('notice').innerHTML=`<b>${q.name}</b> fica em <b>${q.state}</b>.<br>${q.fact}`});function board(players,el){el.innerHTML='<h3>Placar</h3>'+[...players].sort((a,b)=>b.score-a.score).map((p,i)=>`<div><span>${i+1}. ${p.name}</span><b>${p.score} pts</b></div>`).join('')}socket.on('closed',()=>{alert('O administrador encerrou a sala.');location.reload()});
-</script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>Rota das Origens Multiplayer</title>
+
+  <style>
+    :root {
+      --verde: #163f36;
+      --verde-claro: #286555;
+      --dourado: #e1aa4c;
+      --creme: #f5efe3;
+      --vermelho: #b14d3b;
+      --texto: #17211e;
+      --branco: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--texto);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      background:
+        radial-gradient(
+          circle at 10% 0,
+          #ffffff,
+          var(--creme) 52%,
+          #dfeae4
+        );
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 4vw;
+      color: var(--branco);
+      background: var(--verde);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(20px, 3vw, 30px);
+    }
+
+    header small {
+      color: #cfe2da;
+    }
+
+    .badge {
+      padding: 8px 12px;
+      border: 1px solid #ffffff35;
+      border-radius: 999px;
+      background: #ffffff18;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.show {
+      display: block;
+    }
+
+    .card {
+      width: min(620px, 92vw);
+      margin: 7vh auto;
+      padding: 28px;
+  
