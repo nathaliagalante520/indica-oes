@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: rota-das-origens
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
